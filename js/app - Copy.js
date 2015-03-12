@@ -1,45 +1,49 @@
 // collision detection between player and enemies
 var  checkCollisions = function() {
-    var playerLeft = player.x + 10;
-    var playerRight = player.x + 90;
-    var playerTop = player.y + 5;
-    var playerBottom = player.y + 78;
+    var playerLeft = player.x;
+    var playerRight = player.x + 99;
+    var playerTop = player.y;
+    var playerBottom = player.y + 82;
 
     // only check for a collision if we are in the road way
     if (playerBottom <= 322 && playerTop > 72) {
         //check to see if we have a collision with an enemy
+        //console.log("left " + playerLeft + " right " + playerRight + " top " + playerTop + " bottom " + playerBottom);
         for (i=0; i < allEnemies.length; i++) {
+            console.log("here");
             var enemyLeft = allEnemies[i].x;
             var enemyRight = allEnemies[i].x + 99;
-            var enemyTop = allEnemies[i].y + 10;
-            var enemyBottom = enemyTop + 83;
+            var enemyTop = allEnemies[i].y;
+            var enemyBottom = allEnemies[i].y + 82;                
 
-            if (!(playerRight < enemyLeft || playerLeft > enemyRight || playerBottom < enemyTop || playerTop > enemyBottom)) {
-                player.x = 201;
-                player.y = 405;
-                player.nextx = 201;
-                player.nexty = 405;
-                player.life--;
-                player.renderLives();
-                break;
+            if (!(playerRight < enemyLeft || 
+                  playerLeft > enemyRight ||
+                  playerBottom < enemyTop || 
+                  playerTop > enemyBottom)) {
+
+                      player.x = 201;
+                      player.y = 405;
+                      player.nextx = 201;
+                      player.nexty = 405;
+                      break;
             }
         }
     }
-};
+}
 
 // Enemies our player must avoid
 var Enemy = function(locx,locy,speed) {
     // Variables applied to each of our instances go here,
     var obj = Object.create(Enemy.prototype);
-    obj.x = locx;
-    obj.y = locy;
+    obj.x = locx; 
+    obj.y = locy;  
     obj.speed = speed;
 
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
     obj.sprite = 'images/enemy-bug.png';
-    return obj;
-};
+    return obj; 
+}
 
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
@@ -56,7 +60,7 @@ Enemy.prototype.update = function(dt) {
     x = this.x;
     y = this.y;
 
-    if (x < 505) {
+    if (x < 505)  {
         this.x = this.x + this.speed + (dt * this.speed);
     }
     else {
@@ -74,18 +78,20 @@ Enemy.prototype.update = function(dt) {
     }
 
     //check to see if we have a collision with another enemy
-    for (var i=0; i < allEnemies.length; i++) {
+    /*for (i=0; i < allEnemies.length; i++) {
         if (allEnemies[i] != this) {
+           //if () || (allEnemies[i].y == this.y) {
             if (allEnemies[i].x == this.x && allEnemies[i].y == this.y) {
                 this.x = 105;
             }
-        }
-    }
+        }        
+    }*/
+    // if the player is in the road way check for a collision with the enemy   
 }
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);   
 }
 
 // This class requires an update(), render() and
@@ -94,41 +100,47 @@ Enemy.prototype.render = function() {
 var Player = function(locx,locy) {
     // Variables applied to each of our instances go here,
     var obj = Object.create(Player.prototype);
-
-    // attributes that store location information
-    obj.x = locx;
-    obj.y = locy;
+    obj.x = locx; 
+    obj.y = locy; 
     obj.nextx = locx;
-    obj.nexty = locy;
-
-    // number of lives left
-    obj.life = 5;
-
-    // number of times the player makes it across the road
-    obj.level = 0;
+    obj.nexty = locy; 
 
     // The image/sprite for our Player
     obj.sprite = 'images/char-boy.png';
-    return obj;
-};
+    return obj; 
+}
 
 Player.prototype.update = function() {
-    if (this.nextx < 501 && this.nextx > 0)  {
-        this.x = this.nextx;
-    }
+    var collision = 0;
 
-    if (this.nexty < -10) {
+    // if the player is in the road way check for a collision with the enemy
+    /*if (y < 322 && y > 72) {
+        var collision = checkCollisions(x,y);
+        console.log('check for collision');
+    }*/
+
+    if (collision == 1) {
+        // a collision was detected, so send player back to starting position
+        this.x = 201;
         this.y = 405;
     }
-    else if (this.nexty < 450)  {
-        this.y = this.nexty;
+    else {
+        if (this.nextx < 505 && this.nextx > 0)  {
+            this.x = this.nextx;
+        }    
+
+
+        if (this.nexty < -10) {
+            this.y = 405;
+        }
+        else if (this.nexty < 450)  {
+            this.y = this.nexty;
+        } 
     }
 }
 
 // Draw the Player on the screen
 Player.prototype.render = function() {
-    player.renderLives();
-    player.renderLevel();
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 }
 
@@ -151,25 +163,10 @@ Player.prototype.handleInput = function(key) {
                       y = this.y;
     }
 
-    if (this.nexty == -10) {
-        player.level++;
-    }
-
     player.nextx = x;
     player.nexty = y;
-}
-
-Player.prototype.renderLives = function() {
-    ctx.font='bold 20px arial';
-    ctx.fillStyle = 'Black';
-    ctx.fillText(player.life, 470, 575);
-}
-
-Player.prototype.renderLevel = function() {
-    ctx.font='bold 20px arial';
-    ctx.fillStyle = 'Black';
-    ctx.fillText(player.level, 65, 575);
-}
+    //player.update();
+} 
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
@@ -177,7 +174,6 @@ Player.prototype.renderLevel = function() {
 var burke = new Enemy(0,60,6);
 var lila = new Enemy(85,145,4.5);
 var mac = new Enemy(0,230,2.5);
-
 var allEnemies = [burke, lila, mac];
 
 var player = new Player(201,405);
@@ -193,4 +189,10 @@ document.addEventListener('keyup', function(e) {
     };
 
     player.handleInput(allowedKeys[e.keyCode]);
+});
+
+document.addEventListener('click',function(e) {
+    var x = e.pageX;
+    var y = e.pageY;
+    console.log('x location: ' + x + '; y location: ' + y);
 });

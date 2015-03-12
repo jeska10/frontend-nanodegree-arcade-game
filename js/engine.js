@@ -41,12 +41,14 @@ var Engine = (function(global) {
          */
         var now = Date.now(),
             dt = (now - lastTime) / 1000.0;
-
         /* Call our update/render functions, pass along the time delta to
          * our update function since it may be used for smooth animation.
          */
         update(dt);
         render();
+        if (player.life == 0) {
+            reset();
+        }
 
         /* Set our lastTime variable which is used to determine the time delta
          * for the next time this function is called.
@@ -56,7 +58,12 @@ var Engine = (function(global) {
         /* Use the browser's requestAnimationFrame function to call this
          * function again as soon as the browser is able to draw another frame.
          */
-        win.requestAnimationFrame(main);
+        if (player.life > 0) {
+            win.requestAnimationFrame(main);
+        }
+        else {
+            reset();
+        }
     };
 
     /* This function does some initial setup that should only occur once,
@@ -80,7 +87,7 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
-        // checkCollisions();
+        checkCollisions();
     }
 
     /* This is called by the update function  and loops through all of the
@@ -135,8 +142,12 @@ var Engine = (function(global) {
                 ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
             }
         }
-
-
+        // add a label for the players level and number of lives
+        ctx.font='bold 20px arial';
+        ctx.fillStyle = 'Black';
+        ctx.fillText('Level: ', 5, 575);
+        ctx.fillText('Lives: ', 410, 575);
+        
         renderEntities();
     }
 
@@ -160,7 +171,9 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
-        // noop
+        ctx.font='bold 40px Georgia';
+        ctx.fillStyle = 'RED';
+        ctx.fillText('GAME OVER!',115,200);
     }
 
     /* Go ahead and load all of the images we know we're going to need to
