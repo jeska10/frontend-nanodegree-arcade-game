@@ -8,7 +8,7 @@ var  checkCollisions = function() {
     // only check for a collision if we are in the road way
     if (playerBottom <= 322 && playerTop > 72) {
         //check to see if we have a collision with an enemy
-        for (i=0; i < allEnemies.length; i++) {
+        for (var i=0; i < allEnemies.length; i++) {
             var enemyLeft = allEnemies[i].x;
             var enemyRight = allEnemies[i].x + 99;
             var enemyTop = allEnemies[i].y + 10;
@@ -50,7 +50,7 @@ Enemy.prototype.update = function(dt) {
     var x;
     var y;
 
-    if (this.x == 0) {
+    if (this.x === 0) {
         this.x = 1;
     }
     x = this.x;
@@ -69,7 +69,7 @@ Enemy.prototype.update = function(dt) {
                     break;
             case 3: this.y = 225;
                     break;
-            default: 60;
+            default: this.y = 60;
         }
     }
 
@@ -81,12 +81,12 @@ Enemy.prototype.update = function(dt) {
             }
         }
     }
-}
+};
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-}
+};
 
 // This class requires an update(), render() and
 // a handleInput() method.
@@ -117,20 +117,20 @@ Player.prototype.update = function() {
         this.x = this.nextx;
     }
 
-    if (this.nexty < -10) {
+    if (this.nexty < 73) {
         this.y = 405;
     }
     else if (this.nexty < 450)  {
         this.y = this.nexty;
     }
-}
+};
 
 // Draw the Player on the screen
 Player.prototype.render = function() {
     player.renderLives();
     player.renderLevel();
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-}
+};
 
 Player.prototype.handleInput = function(key) {
     var x = 0;
@@ -151,25 +151,25 @@ Player.prototype.handleInput = function(key) {
                       y = this.y;
     }
 
-    if (this.nexty == -10) {
+    if (this.nexty == 73) {
         player.level++;
     }
 
     player.nextx = x;
     player.nexty = y;
-}
+};
 
 Player.prototype.renderLives = function() {
     ctx.font='bold 20px arial';
     ctx.fillStyle = 'Black';
     ctx.fillText(player.life, 470, 575);
-}
+};
 
 Player.prototype.renderLevel = function() {
     ctx.font='bold 20px arial';
     ctx.fillStyle = 'Black';
     ctx.fillText(player.level, 65, 575);
-}
+};
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
